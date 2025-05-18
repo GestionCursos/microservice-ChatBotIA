@@ -17,25 +17,11 @@
 //   logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
 // });
-import express, { Request, Response } from 'express';
-import dotenv from 'dotenv';
-import courseRoutes from './routes/courseRoutes';
 import * as functions from 'firebase-functions';
+import { consultaEventosDisponibles } from './services/courseService';
 
-export const helloWorld = functions.https.onRequest((request, response) => {
+export const helloWorld = functions.https.onRequest(async (request, response) => {
     response.send("¡Hola mundo desde Firebase!");
-});
-dotenv.config();
-
-const app = express();
-const PORT = 3000;
-app.use(express.json());
-app.use('/api/courses', courseRoutes);
-
-app.get('/', (req: Request, res: Response) => {
-    res.send('¡Hola Mundo desde Express con TypeScript!');
-});
-
-app.listen(PORT, () => {
-    console.log(`Servidor escuchando en http://localhost:${PORT}`);
+    const eventos = await consultaEventosDisponibles();
+    console.log(eventos);
 });
