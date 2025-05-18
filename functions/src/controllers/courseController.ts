@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 export const getRecommendedCourses = async (req: Request, res: Response) => {
     try {
-        const userMessage = req.query.q as string;
+        //const userMessage = req.query.q as string;
         const recommendedCourse = [
             'Curso de Inteligencia Artificial',
             'Curso de Node.js con PostgreSQL',
