@@ -18,10 +18,25 @@
 //   response.send("Hello from Firebase!");
 // });
 import * as functions from 'firebase-functions';
-import { consultaEventosDisponibles } from './services/courseService';
+import { generatedContent } from './services/ia-service';
 
-export const helloWorld = functions.https.onRequest(async (request, response) => {
-    response.send("¡Hola mundo desde Firebase!");
-    const eventos = await consultaEventosDisponibles();
-    console.log(eventos);
-});
+export const cursosDisponibles = functions.https.onRequest(async (request, response) => {
+
+    try {
+        const { mensaje } = request.body; // 👈 Aquí accedes al contenido del body
+
+        if (!mensaje) {
+            response.status(400).json({ error: 'Mensaje requerido' });
+            return ;
+        }
+
+        const resultado = await generatedContent(mensaje);
+        console.log(resultado);
+
+        response.status(200).json({ respuesta: resultado });
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ error: 'Error interno del servidor' });
+    }
+}
+);
