@@ -1,5 +1,40 @@
+import axios from "axios";
 import { consultaEventosDisponibles } from "./courseService";
 
+export const generatedContent = async (promptData: string) => {
+    const prompt = buildPrompt(promptData);
+    try {
+        const response = await axios.post(
+            process.env.IA_URL || "",
+            {
+                model: process.env.IA_MODELO,
+                messages: [{
+
+                    role: process.env.IA_CONECTION_ROLE,
+                    content: prompt
+                }
+                ]
+            }, {
+            headers: {
+                Authorization: `Bearer ${process.env.IA_API_KEY}`,
+                'Content-Type': 'application/json',
+            }
+        }
+        );
+        return response.data.choices[0].message.content;
+
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error(
+                'Error de llamada a la API:',
+                (error as any).response?.data || error.message,
+            );
+        } else {
+            console.error('Error de llamada a la API:', error);
+        }
+        throw new Error('Fallo la generacion del articulo con IA');
+    }
+}
 
 const eventosDisponibles = async () => {
     return await consultaEventosDisponibles();
