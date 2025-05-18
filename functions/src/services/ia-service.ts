@@ -2,7 +2,7 @@ import axios from "axios";
 import { consultaEventosDisponibles } from "./courseService";
 
 export const generatedContent = async (promptData: string) => {
-    const prompt = buildPrompt(promptData);
+    const prompt =await buildPrompt(promptData);
     try {
         const response = await axios.post(
             process.env.IA_URL || "",
@@ -36,13 +36,34 @@ export const generatedContent = async (promptData: string) => {
     }
 }
 
-const eventosDisponibles = async () => {
-    return await consultaEventosDisponibles();
-}
+// Función para obtener todos los cursos y su información
+const eventosDisponibles = async (): Promise<string> => {
+    const cursosDisponibles = await consultaEventosDisponibles(); 
+    let cursosMensaje = "";
 
-const buildPrompt = (promptData: string) => {
-    return `tenbgo la siguiente lista de cursos:
-        ${eventosDisponibles}
+    // Recorremos los cursos y concatenamos toda la información de cada uno
+    cursosDisponibles.forEach((curso: {
+        nombre: string,
+        tipo_evento: string,
+        fecha_inicio: string,
+        fecha_fin: string,
+        costo: number,
+        categoria: string,
+        modalidad: string,
+        descripcion: string,
+        organizador_nombre: string
+    }) => {
+        cursosMensaje += `
+        Curso: ${curso.nombre},Tipo de evento: ${curso.tipo_evento},Fecha de inicio: ${curso.fecha_inicio},Fecha de fin: ${curso.fecha_fin},Costo: $${curso.costo},Categoría: ${curso.categoria},Modalidad: ${curso.modalidad},Descripción: ${curso.descripcion},Organizador: ${curso.organizador_nombre}
+        `;
+    }); 
+    return cursosMensaje;
+};
+
+const buildPrompt =async (promptData: string) => {
+      const eventos = await eventosDisponibles();
+    return `la plataforma dispone de esta lista de cursos:
+        ${eventos}
         y el usuario me a preguntado o dicho:
         ${promptData}
         Dame una respuesta clara, en lenguaje natural, 
@@ -52,6 +73,9 @@ const buildPrompt = (promptData: string) => {
         que brinda cursos de diferentes tipos a usuarios 
         asi que si la pregunta es fuera de este dale una 
         respuesta corta recordandole que estas para ayudar 
-        con informacion de cursos
+        con informacion de cursos. todas las respuestas 
+        que envies debe ser en texto plano solo con letras 
+        sin simbolos o caracteres ten en mente que tu eres la plataforma o una persona que la administra.
+        redacta el mensaje adecuadamente como un vendedor 
     `;
 }
