@@ -1,8 +1,8 @@
-import { pool } from "../config/db"
+import {pool} from "../config/db";
 
 // 1. Consulta eventos disponibles
 export const consultaEventosDisponibles = async () => {
-    const query = `
+  const query = `
         SELECT 
             e.id_evento,
             e.nombre,
@@ -20,14 +20,14 @@ export const consultaEventosDisponibles = async () => {
         WHERE e.visible = true;
     `;
 
-    const response = await pool.query(query);
-    console.log(response);
-    return response.rows;
+  const response = await pool.query(query);
+  console.log(response);
+  return response.rows;
 };
 
 // 2. Detalles de evento específico
 export const detallesEspecificos = async (id: number) => {
-    const query = `
+  const query = `
         SELECT 
             e.*,
             o.nombre,
@@ -38,13 +38,13 @@ export const detallesEspecificos = async (id: number) => {
         WHERE e.id_evento = $1;
     `;
 
-    const response = await pool.query(query, [id]);
-    return response.rows;
+  const response = await pool.query(query, [id]);
+  return response.rows;
 };
 
 // 3. Buscar cursos por palabra clave
 export const cursoPorPalabraClave = async (palabra: string) => {
-    const query = `
+  const query = `
         SELECT 
             e.id_evento,
             e.nombre,
@@ -54,14 +54,14 @@ export const cursoPorPalabraClave = async (palabra: string) => {
           AND (e.nombre ILIKE $1 OR e.descripcion ILIKE $1);
     `;
 
-    const searchTerm = `%${palabra}%`;
-    const response = await pool.query(query, [searchTerm]);
-    return response.rows;
+  const searchTerm = `%${palabra}%`;
+  const response = await pool.query(query, [searchTerm]);
+  return response.rows;
 };
 
 // 4. Información del instructor
 export const informacionDelInstructor = async (id: number) => {
-    const query = `
+  const query = `
         SELECT 
             o.nombre,
             o.correo,
@@ -73,6 +73,6 @@ export const informacionDelInstructor = async (id: number) => {
         GROUP BY o.nombre, o.correo, o.institucion;
     `;
 
-    const response = await pool.query(query, [id]);
-    return response.rows;
+  const response = await pool.query(query, [id]);
+  return response.rows;
 };
